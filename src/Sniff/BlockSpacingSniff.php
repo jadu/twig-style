@@ -60,11 +60,11 @@ final class BlockSpacingSniff extends AbstractSniff
             return;
         }
 
-        // Calculate the number of consecutive EOL tokens by finding the previous non-EOL_TYPE token
+        // Calculate the number of consecutive EOL tokens before this one by finding the previous non-EOL_TYPE token
         $previousPosition = $this->findPrevious(Token::EOL_TYPE, $tokens, $tokenBeforeBlockStartPosition - 1, true);
         if (false === $previousPosition) {
             // If all previous tokens are EOL_TYPE, we have to count one more
-            // since $tokenPosition start at 0
+            // since $tokenPosition starts at 0
             $consecutiveEolTokens = $tokenBeforeBlockStartPosition + 1;
         } else {
             $consecutiveEolTokens = $tokenBeforeBlockStartPosition - $previousPosition - 1;
@@ -90,8 +90,8 @@ final class BlockSpacingSniff extends AbstractSniff
             return;
         }
 
-        // Because we added extra empty lines to the count
-        $consecutiveEolTokens = min($consecutiveEolTokens, $tokenPosition);
+        // Safeguard because we may have added extra empty lines to the count if all previous tokens are EOL_TYPE
+        $consecutiveEolTokens = min($consecutiveEolTokens, $tokenBeforeBlockStartPosition);
 
         if (0 === $consecutiveEolTokens) {
             $fixer->addNewlineBefore($tokenBeforeBlockStartPosition);
@@ -124,7 +124,7 @@ final class BlockSpacingSniff extends AbstractSniff
             return;
         }
 
-        // Calculate the number of consecutive EOL tokens by finding the next non-EOL_TYPE token
+        // Calculate the number of consecutive EOL tokens after this one by finding the next non-EOL_TYPE token
         $nextPosition = $this->findNext(Token::EOL_TYPE, $tokens, $tokenAfterBlockEndPosition + 1, true);
         Assert::notFalse($nextPosition, 'An EOL_TYPE cannot be the last non-empty token');
         $consecutiveEolTokens = $nextPosition - $tokenAfterBlockEndPosition - 1;
@@ -153,8 +153,8 @@ final class BlockSpacingSniff extends AbstractSniff
             $fixer->addNewline($tokenAfterBlockEndPosition);
         } else {
             $fixer->beginChangeSet();
-            while ($consecutiveEolTokens >= 2 || $consecutiveEolTokens === $tokenAfterBlockEndPosition) {
-                $fixer->replaceToken($tokenAfterBlockEndPosition - $consecutiveEolTokens, '');
+            while ($consecutiveEolTokens >= 2) {
+                $fixer->replaceToken($nextPosition - $consecutiveEolTokens, '');
                 --$consecutiveEolTokens;
             }
             $fixer->endChangeSet();
