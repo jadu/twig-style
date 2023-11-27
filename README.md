@@ -1,5 +1,7 @@
 # Jadu Twig Style
 
+Jadu Twig style is powered by [Twig-CS-Fixer](https://github.com/VincentLanglet/Twig-CS-Fixer).
+
 ## Installation
 
 1. Require the jadu/twig-style dev dependency:
@@ -126,6 +128,14 @@ A single space is required after the opening and before the closing of a hash.
 
 ```twig
 {{ { 'foo': 'bar', 'baz': 'qux' } }}
+```
+
+The following exceptions apply:
+
+- Empty hashes must not contain any whitespace.
+
+```twig
+{% set emptyHash = {} %}
 ```
 
 [^1]: https://symfony.com/blog/better-white-space-control-in-twig-templates#added-a-spaceless-filter
