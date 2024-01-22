@@ -3,7 +3,7 @@
 namespace Jadu\Style\Twig\Standard;
 
 use Jadu\Style\Twig\Sniff\BlockSpacingSniff;
-use Jadu\Style\Twig\Sniff\NoEndblockNameSniff;
+use Jadu\Style\Twig\Sniff\EndblockNameSniff;
 use Jadu\Style\Twig\Sniff\NoSpacelessTagSniff;
 use Jadu\Style\Twig\Sniff\PunctuationSpacingSniff;
 use TwigCsFixer\Sniff\BlankEOFSniff;
@@ -19,7 +19,7 @@ use TwigCsFixer\Standard\StandardInterface;
 class JaduStandard implements StandardInterface
 {
     /**
-     * {@inheritdoc}
+     * @return SniffInterface[]
      */
     public function getSniffs(): array
     {
@@ -28,8 +28,8 @@ class JaduStandard implements StandardInterface
             new BlockSpacingSniff(),
             new DelimiterSpacingSniff(),
             new EmptyLinesSniff(),
+            new EndblockNameSniff(),
             new IndentSniff(),
-            new NoEndblockNameSniff(),
             new NoSpacelessTagSniff(),
             new OperatorSpacingSniff(),
             new PunctuationSpacingSniff(),

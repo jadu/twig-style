@@ -104,13 +104,13 @@ The following exceptions apply:
     {% block aside_container %}
     ```
 
-### No endblock names
+### Endblock names
 
-Any `endblock` tags should not be followed by the name of the block they are closing.
+Any `endblock` tags must be followed by the name of the block they are closing.
 
 ```twig
 {% block aside_container %}
-{% endblock %}
+{% endblock aside_container %}
 ```
 
 ### No spaceless tags
