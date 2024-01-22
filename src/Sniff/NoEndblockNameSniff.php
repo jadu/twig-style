@@ -8,7 +8,7 @@ use TwigCsFixer\Sniff\AbstractSniff;
 use TwigCsFixer\Token\Token;
 
 /**
- * Ensure that an endblock has no name.
+ * Ensure that an endblock tag has no name.
  */
 final class NoEndblockNameSniff extends AbstractSniff
 {
