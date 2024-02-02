@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Sniff;
+namespace Jadu\Style\Twig\Rule;
 
 use ReflectionClass;
-use TwigCsFixer\Sniff\AbstractSniff;
+use TwigCsFixer\Rules\AbstractRule;
 use TwigCsFixer\Token\Token;
 
 /**
- * This sniff is intended for development purposes only.
+ * This rule is intended for development purposes only.
  *
- * Use this sniff to tokenize a Twig template and generate a report mapping token types to values.
+ * Use this rule to tokenize a Twig template and generate a report mapping token types to values.
  */
-final class TokenTypeSniff extends AbstractSniff
+final class TokenTypeRule extends AbstractRule
 {
     /**
      * @param int $tokenPosition

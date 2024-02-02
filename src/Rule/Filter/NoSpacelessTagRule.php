@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Sniff;
+namespace Jadu\Style\Twig\Rule\Filter;
 
-use TwigCsFixer\Sniff\AbstractSniff;
+use TwigCsFixer\Rules\AbstractRule;
 use TwigCsFixer\Token\Token;
 
 /**
  * Replaces usages of the {% spaceless %} tag with {% apply spaceless %}.
  * Replaces usages of the {% endspaceless %} tag with {% endapply %}.
  */
-final class NoSpacelessTagSniff extends AbstractSniff
+final class NoSpacelessTagRule extends AbstractRule
 {
     /**
      * @param int $tokenPosition
@@ -25,7 +25,7 @@ final class NoSpacelessTagSniff extends AbstractSniff
 
         $error = false;
         if (
-            $this->isTokenMatching($token, Token::BLOCK_TAG_TYPE)
+            $this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
             && in_array($token->getValue(), ['spaceless', 'endspaceless'], true)
         ) {
             $error = true;

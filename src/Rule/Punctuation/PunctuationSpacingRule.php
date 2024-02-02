@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Sniff;
+namespace Jadu\Style\Twig\Rule\Punctuation;
 
-use TwigCsFixer\Sniff\AbstractSpacingSniff;
+use TwigCsFixer\Rules\AbstractSpacingRule;
 use TwigCsFixer\Token\Token;
 use Webmozart\Assert\Assert;
 
@@ -12,9 +12,9 @@ use Webmozart\Assert\Assert;
  * Ensure there is no space before and after punctuation except for '{', '}', ':', and ','.
  * No spaces are allowed between "paired" tokens such as arrays, hashes, and parentheses when they are empty.
  *
- * @see TwigCsFixer\Sniff\PunctuationSpacingSniff
+ * @see \TwigCsFixer\Rules\Punctuation\PunctuationSpacingRule
  */
-final class PunctuationSpacingSniff extends AbstractSpacingSniff
+final class PunctuationSpacingRule extends AbstractSpacingRule
 {
     private const SPACE_BEFORE = [
         ')' => 0,
@@ -45,6 +45,7 @@ final class PunctuationSpacingSniff extends AbstractSpacingSniff
     protected function getSpaceBefore(int $tokenPosition, array $tokens): ?int
     {
         $token = $tokens[$tokenPosition];
+
         if (!$this->isTokenMatching($token, Token::PUNCTUATION_TYPE)) {
             return null;
         }
@@ -102,7 +103,7 @@ final class PunctuationSpacingSniff extends AbstractSpacingSniff
      *
      * @return bool
      */
-    protected function getPairedTokens(Token $firstToken, Token $secondToken): bool
+    private function getPairedTokens(Token $firstToken, Token $secondToken): bool
     {
         return
             ($firstToken->getValue() === '{' && $secondToken->getValue() === '}')

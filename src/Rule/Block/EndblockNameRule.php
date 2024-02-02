@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Sniff;
+namespace Jadu\Style\Twig\Rule\Block;
 
-use TwigCsFixer\Sniff\AbstractSniff;
+use TwigCsFixer\Rules\AbstractRule;
 use TwigCsFixer\Token\Token;
 use Webmozart\Assert\Assert;
 
 /**
  * Ensure that an endblock tag has the name of the corresponding block tag.
  */
-final class EndblockNameSniff extends AbstractSniff
+final class EndblockNameRule extends AbstractRule
 {
     /**
      * @param int $tokenPosition
@@ -22,8 +22,9 @@ final class EndblockNameSniff extends AbstractSniff
     protected function process(int $tokenPosition, array $tokens): void
     {
         $token = $tokens[$tokenPosition];
+
         if (
-            $this->isTokenMatching($token, Token::BLOCK_TAG_TYPE)
+            $this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
             && $token->getValue() === 'endblock'
         ) {
             $matchingBlockTokenPosition = $this->getMatchingBlockTokenPositionForEndblockToken($tokenPosition, $tokens);
@@ -120,7 +121,7 @@ final class EndblockNameSniff extends AbstractSniff
     {
         $token = $tokens[$tokenPosition];
 
-        if (!$this->isTokenMatching($token, Token::BLOCK_TAG_TYPE) || $token->getValue() !== 'endblock') {
+        if (!$this->isTokenMatching($token, Token::BLOCK_NAME_TYPE) || $token->getValue() !== 'endblock') {
             return false;
         }
 
@@ -128,7 +129,7 @@ final class EndblockNameSniff extends AbstractSniff
         $blocks = 0;
         $endblocks = 1;
         // When $blocks === $endblocks we have found the matching block token for the original endblock token
-        while ($blocks !== $endblocks && false !== ($previousPosition = $this->findPrevious(Token::BLOCK_TAG_TYPE, $tokens, $previousPosition))) {
+        while ($blocks !== $endblocks && false !== ($previousPosition = $this->findPrevious(Token::BLOCK_NAME_TYPE, $tokens, $previousPosition))) {
             $previousBlockToken = $tokens[$previousPosition];
             if ($previousBlockToken->getValue() === 'block') {
                 ++$blocks;

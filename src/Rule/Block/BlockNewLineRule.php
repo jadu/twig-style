@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Sniff;
+namespace Jadu\Style\Twig\Rule\Block;
 
-use TwigCsFixer\Sniff\AbstractSniff;
+use TwigCsFixer\Rules\AbstractRule;
 use TwigCsFixer\Token\Token;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure that there is one blank line before block tags and after endblock tags, with the following exceptions:
+ * Ensure that there is one new line before block tags and after endblock tags, with the following exceptions:
  * 1. Inline blocks are allowed. e.g.
  *      <body class="{% block body_classes %}{{ bodyClasses }}{% endblock %}">
  * 2. Comments on the line above block tags are allowed. e.g.
  *      {# This block adds a container around the aside #}
  *      {% block aside_container %}.
  */
-final class BlockSpacingSniff extends AbstractSniff
+final class BlockNewLineRule extends AbstractRule
 {
     /**
      * @param int $tokenPosition
@@ -27,8 +27,9 @@ final class BlockSpacingSniff extends AbstractSniff
     protected function process(int $tokenPosition, array $tokens): void
     {
         $token = $tokens[$tokenPosition];
+
         if (
-            !$this->isTokenMatching($token, Token::BLOCK_TAG_TYPE)
+            !$this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
             || !in_array($token->getValue(), ['block', 'endblock'], true)
         ) {
             return;
@@ -81,7 +82,7 @@ final class BlockSpacingSniff extends AbstractSniff
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must start with 1 new line character; found %d', $consecutiveEolTokens),
+            sprintf('A block must start with 1 new line; found %d', $consecutiveEolTokens),
             $token
         );
 
@@ -140,7 +141,7 @@ final class BlockSpacingSniff extends AbstractSniff
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must end with 1 blank line; found %d', $consecutiveEolTokens),
+            sprintf('A block must end with 1 new line; found %d', $consecutiveEolTokens),
             $token
         );
 

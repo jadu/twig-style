@@ -61,9 +61,9 @@ vendor/bin/twig-cs-fixer lint --fix
 
 This standard is based on the [official Twig coding standards](https://twig.symfony.com/doc/3.x/coding_standards.html), with the following additions and changes:
 
-### Block spacing
+### Block spacing and new lines
 
-There should be one blank line before block tags and one blank line after endblock tags.
+There should be one new line before block tags and one new line after endblock tags.
 
 ```twig
 
@@ -85,7 +85,6 @@ There should be one blank line before block tags and one blank line after endblo
 
     </div>
 {% endblock %}
-
 
 ```
 
@@ -137,5 +136,9 @@ The following exceptions apply:
 ```twig
 {% set emptyHash = {} %}
 ```
+
+### Variable names
+
+Variable naming conventions are not enforced.
 
 [^1]: https://symfony.com/blog/better-white-space-control-in-twig-templates#added-a-spaceless-filter
