@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Jadu\Style\Twig\Rule\Block;
 
-use TwigCsFixer\Rules\AbstractRule;
+use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
 
 /**
  * Ensure that an endblock tag has no name.
  */
-final class NoEndblockNameRule extends AbstractRule
+final class NoEndblockNameRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition

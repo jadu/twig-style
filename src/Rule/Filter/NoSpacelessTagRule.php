@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Jadu\Style\Twig\Rule\Filter;
 
-use TwigCsFixer\Rules\AbstractRule;
+use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
 
 /**
  * Replaces usages of the {% spaceless %} tag with {% apply spaceless %}.
  * Replaces usages of the {% endspaceless %} tag with {% endapply %}.
  */
-final class NoSpacelessTagRule extends AbstractRule
+final class NoSpacelessTagRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition

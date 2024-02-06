@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jadu\Style\Twig\Rule\Block;
 
-use TwigCsFixer\Rules\AbstractRule;
+use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
 use Webmozart\Assert\Assert;
 
@@ -16,7 +16,7 @@ use Webmozart\Assert\Assert;
  *      {# This block adds a container around the aside #}
  *      {% block aside_container %}.
  */
-final class BlockNewLineRule extends AbstractRule
+final class BlockNewLineRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition
