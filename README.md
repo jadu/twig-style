@@ -148,10 +148,28 @@ The rules in the `Jadu\Style\Twig\Rule\Development` namespace are provided for d
 You will need to update your project's twig-cs-fixer config file `.twig-cs-fixer.php` to enable these rules, as non-fixable rules are disabled by default.
 
 ```php
+<?php
+
+use Jadu\Style\Twig\Rule\Development\TokenTypeRule;
+use TwigCsFixer\Config\Config;
+use TwigCsFixer\File\Finder;
+use TwigCsFixer\Ruleset\Ruleset;
+
+$finder = Finder::create()
+    ->in(__DIR__ . '/src')
+    ->ignoreVCSIgnored(true);
+
+$config = new Config();
+$config->setFinder($finder);
+
 $ruleset = new Ruleset();
-$ruleset->allowNonFixableRules();
-$ruleset->addRule(new \Jadu\Style\Twig\Rule\Development\TokenTypeRule());
+$ruleset->addRule(new TokenTypeRule());
 $config->setRuleset($ruleset);
+
+$config->allowNonFixableRules();
+
+return $config;
+
 ```
 
 - `TokenTypeRule` helps you see how a twig template is tokenized by Twig-CS-Fixer by mapping token types to values.
