@@ -63,7 +63,7 @@ This standard is based on the [official Twig coding standards](https://twig.symf
 
 ### Block spacing and new lines
 
-There should be one new line before block tags and one new line after endblock tags.
+There must be one new line before block tags and one new line after endblock tags.
 
 ```twig
 
@@ -114,7 +114,7 @@ Any `endblock` tags must be followed by the name of the block they are closing.
 
 ### No spaceless tags
 
-The `spaceless` tag was deprecated in Twig 1.38 and 2.7.3[^1] and an equivalent `spaceless` filter was introduced. Usages of the `spaceless` tag are replaced with the equivalent `apply spaceless` filter.
+The `spaceless` tag was deprecated in Twig 1.38 and 2.7.3[^1] and an equivalent `spaceless` filter was introduced. Usages of the `spaceless` tag must be replaced with the equivalent `apply spaceless` filter.
 
 ```twig
 {% apply spaceless %}
@@ -140,5 +140,20 @@ The following exceptions apply:
 ### Variable names
 
 Variable naming conventions are not enforced.
+
+## Development
+
+The rules in the `Jadu\Style\Twig\Rule\Development` namespace are provided for development purposes to help with maintaining Jadu Twig style.
+
+You will need to update your project's twig-cs-fixer config file `.twig-cs-fixer.php` to enable these rules, as non-fixable rules are disabled by default.
+
+```php
+$ruleset = new Ruleset();
+$ruleset->allowNonFixableRules();
+$ruleset->addRule(new \Jadu\Style\Twig\Rule\Development\TokenTypeRule());
+$config->setRuleset($ruleset);
+```
+
+- `TokenTypeRule` helps you see how a twig template is tokenized by Twig-CS-Fixer by mapping token types to values.
 
 [^1]: https://symfony.com/blog/better-white-space-control-in-twig-templates#added-a-spaceless-filter

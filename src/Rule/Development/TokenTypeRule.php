@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jadu\Style\Twig\Rule;
+namespace Jadu\Style\Twig\Rule\Development;
 
 use ReflectionClass;
 use TwigCsFixer\Rules\AbstractRule;
