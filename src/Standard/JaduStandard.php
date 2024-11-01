@@ -4,6 +4,7 @@ namespace Jadu\Style\Twig\Standard;
 
 use Jadu\Style\Twig\Rule\Block\BlockNewLineRule;
 use Jadu\Style\Twig\Rule\Block\EndblockNameRule;
+use Jadu\Style\Twig\Rule\Filter\NoFilterTagRule;
 use Jadu\Style\Twig\Rule\Filter\NoSpacelessTagRule;
 use Jadu\Style\Twig\Rule\Punctuation\PunctuationSpacingRule;
 use TwigCsFixer\Rules\Delimiter\BlockNameSpacingRule;
@@ -34,6 +35,7 @@ class JaduStandard implements StandardInterface
             new EndblockNameRule(),
             new IndentRule(),
             new NoSpacelessTagRule(),
+            new NoFilterTagRule(),
             new OperatorNameSpacingRule(),
             new OperatorSpacingRule(),
             new PunctuationSpacingRule(),
