@@ -121,6 +121,18 @@ The `spaceless` tag was deprecated in Twig 1.38 and 2.7.3[^1] and an equivalent 
 {% endapply %}
 ```
 
+### No filter tags
+
+The `filter` tag was deprecated in Twig 1.40[^2] and 2.9[^3] in favour of the `apply` tag, which behaves identically to `filter` except that the wrapped template data is not scoped. Usages of the `filter` tag must be replaced with the equivalent `apply` tag.
+
+```twig
+{% apply lower|escape('html') %}
+    <strong>UPPERCASE TEXT</strong>
+{% endapply %}
+
+{# outputs "&lt;strong&gt;uppercase text&lt;/strong&gt;" #}
+```
+
 ### Punctuation spacing
 
 A single space is required after the opening and before the closing of a hash.
@@ -175,3 +187,5 @@ return $config;
 - `TokenTypeRule` helps you see how a twig template is tokenized by Twig-CS-Fixer by mapping token types to values.
 
 [^1]: https://symfony.com/blog/better-white-space-control-in-twig-templates#added-a-spaceless-filter
+[^2]: https://twig.symfony.com/doc/1.x/tags/filter.html
+[^3]: https://twig.symfony.com/doc/2.x/tags/filter.html
