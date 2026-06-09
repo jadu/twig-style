@@ -16,5 +16,14 @@
         "psr-4": {
             "Jadu\\Style\\Twig\\": "src/"
         }
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        },
+        "sort-packages": true
+    },
+    "conflict": {
+        "twig/twig": ">=3.21.0"
     }
 }
