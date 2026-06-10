@@ -6,6 +6,7 @@ namespace Jadu\Style\Twig\Rule\Block;
 
 use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 
 /**
  * Ensure that an endblock tag has no name.
@@ -14,31 +15,31 @@ final class NoEndblockNameRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    protected function process(int $tokenPosition, array $tokens): void
+    protected function process(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         if (
-            $this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
+            $token->isMatching(Token::BLOCK_NAME_TYPE)
             && $token->getValue() === 'endblock'
         ) {
             // Ignore new line
-            $next = $this->findNext(Token::INDENT_TOKENS, $tokens, $tokenPosition + 1, true);
-            if (false === $next || $this->isTokenMatching($tokens[$next], Token::EOL_TOKENS)) {
+            $next = $tokens->findNext(Token::INDENT_TOKENS, $tokenPosition + 1, null, true);
+            if (false === $next || $tokens->get($next)->isMatching(Token::EOL_TOKENS)) {
                 return;
             }
 
             $error = false;
             $nextPosition = $tokenPosition + 1;
-            while (!$this->isTokenMatching($tokens[$nextPosition], Token::BLOCK_END_TYPE)) {
-                $error = $this->isTokenMatching($tokens[$nextPosition], Token::NAME_TYPE);
+            while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
+                $error = $tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::FILTER_NAME_TYPE, Token::FUNCTION_NAME_TYPE, Token::TEST_NAME_TYPE]);
                 if ($error) {
                     $fixer = $this->addFixableError(
-                        sprintf('Unexpected block name "%s" after %s', $tokens[$nextPosition]->getValue(), $token->getValue()),
+                        sprintf('Unexpected block name "%s" after %s', $tokens->get($nextPosition)->getValue(), $token->getValue()),
                         $token
                     );
                     break;

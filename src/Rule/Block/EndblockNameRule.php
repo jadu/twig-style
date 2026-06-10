@@ -6,6 +6,7 @@ namespace Jadu\Style\Twig\Rule\Block;
 
 use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
@@ -15,16 +16,16 @@ final class EndblockNameRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    protected function process(int $tokenPosition, array $tokens): void
+    protected function process(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         if (
-            $this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
+            $token->isMatching(Token::BLOCK_NAME_TYPE)
             && $token->getValue() === 'endblock'
         ) {
             $matchingBlockTokenPosition = $this->getMatchingBlockTokenPositionForEndblockToken($tokenPosition, $tokens);
@@ -35,9 +36,9 @@ final class EndblockNameRule extends AbstractFixableRule
             }
 
             $nameAfterBlockTokenPosition = $this->getNameTokenPositionAfterBlockToken($matchingBlockTokenPosition, $tokens);
-            $nameAfterBlockToken = ($nameAfterBlockTokenPosition !== false) ? $tokens[$nameAfterBlockTokenPosition]->getValue() : null;
+            $nameAfterBlockToken = ($nameAfterBlockTokenPosition !== false) ? $tokens->get($nameAfterBlockTokenPosition)->getValue() : null;
             $nameAfterEndblockTokenPosition = $this->getNameTokenPositionAfterBlockToken($tokenPosition, $tokens);
-            $nameAfterEndblockToken = ($nameAfterEndblockTokenPosition !== false) ? $tokens[$nameAfterEndblockTokenPosition]->getValue() : null;
+            $nameAfterEndblockToken = ($nameAfterEndblockTokenPosition !== false) ? $tokens->get($nameAfterEndblockTokenPosition)->getValue() : null;
 
             if (!$nameAfterBlockToken && !$nameAfterEndblockToken) {
                 $this->addError('Missing block name and endblock name', $token);
@@ -48,7 +49,7 @@ final class EndblockNameRule extends AbstractFixableRule
             if (!$nameAfterBlockToken && $nameAfterEndblockToken) {
                 $this->addError(
                     sprintf('Missing block name "%s"', $nameAfterEndblockToken),
-                    $tokens[$matchingBlockTokenPosition]
+                    $tokens->get($matchingBlockTokenPosition)
                 );
 
                 return;
@@ -86,23 +87,23 @@ final class EndblockNameRule extends AbstractFixableRule
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return int|false
      */
-    private function getNameTokenPositionAfterBlockToken(int $tokenPosition, array $tokens): int|false
+    private function getNameTokenPositionAfterBlockToken(int $tokenPosition, Tokens $tokens): int|false
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         // Ignore new line
-        $next = $this->findNext(Token::INDENT_TOKENS, $tokens, $tokenPosition + 1, true);
-        if (false === $next || $this->isTokenMatching($tokens[$next], Token::EOL_TOKENS)) {
+        $next = $tokens->findNext(Token::INDENT_TOKENS, $tokenPosition + 1, null, true);
+        if (false === $next || $tokens->get($next)->isMatching(Token::EOL_TOKENS)) {
             return false;
         }
 
         $nextPosition = $tokenPosition + 1;
-        while (!$this->isTokenMatching($tokens[$nextPosition], Token::BLOCK_END_TYPE)) {
-            if ($this->isTokenMatching($tokens[$nextPosition], Token::NAME_TYPE)) {
+        while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
+            if ($tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::FILTER_NAME_TYPE, Token::FUNCTION_NAME_TYPE, Token::TEST_NAME_TYPE])) {
                 return $nextPosition;
             }
             ++$nextPosition;
@@ -113,15 +114,15 @@ final class EndblockNameRule extends AbstractFixableRule
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return int|false
      */
-    private function getMatchingBlockTokenPositionForEndblockToken(int $tokenPosition, array $tokens): int|false
+    private function getMatchingBlockTokenPositionForEndblockToken(int $tokenPosition, Tokens $tokens): int|false
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
-        if (!$this->isTokenMatching($token, Token::BLOCK_NAME_TYPE) || $token->getValue() !== 'endblock') {
+        if (!$token->isMatching(Token::BLOCK_NAME_TYPE) || $token->getValue() !== 'endblock') {
             return false;
         }
 
@@ -129,8 +130,8 @@ final class EndblockNameRule extends AbstractFixableRule
         $blocks = 0;
         $endblocks = 1;
         // When $blocks === $endblocks we have found the matching block token for the original endblock token
-        while ($blocks !== $endblocks && false !== ($previousPosition = $this->findPrevious(Token::BLOCK_NAME_TYPE, $tokens, $previousPosition))) {
-            $previousBlockToken = $tokens[$previousPosition];
+        while ($blocks !== $endblocks && false !== ($previousPosition = $tokens->findPrevious(Token::BLOCK_NAME_TYPE, $previousPosition))) {
+            $previousBlockToken = $tokens->get($previousPosition);
             if ($previousBlockToken->getValue() === 'block') {
                 ++$blocks;
             } elseif ($previousBlockToken->getValue() === 'endblock') {

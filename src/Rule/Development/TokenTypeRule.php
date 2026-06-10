@@ -7,6 +7,7 @@ namespace Jadu\Style\Twig\Rule\Development;
 use ReflectionClass;
 use TwigCsFixer\Rules\AbstractRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 
 /**
  * This rule is intended for development purposes only.
@@ -17,13 +18,13 @@ final class TokenTypeRule extends AbstractRule
 {
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    protected function process(int $tokenPosition, array $tokens): void
+    protected function process(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         $tokenClass = new ReflectionClass(Token::class);
         $tokenTypeName = array_search($token->getType(), $tokenClass->getConstants());
