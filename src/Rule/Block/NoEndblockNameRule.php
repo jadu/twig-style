@@ -57,7 +57,10 @@ final class NoEndblockNameRule extends AbstractFixableRule
                 return;
             }
 
-            $fixer->replaceToken($nextPosition, '');
+            while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
+                $fixer->replaceToken($nextPosition, '');
+                ++$nextPosition;
+            }
         }
     }
 }
