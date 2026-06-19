@@ -10,7 +10,7 @@ use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure there is no space before and after punctuation except for '{', '}', ':', and ','.
+ * Ensure there is no space before and after punctuation except for '{', '}', ':', ',', and '?:'.
  * No spaces are allowed between "paired" tokens such as arrays, hashes, and parentheses when they are empty.
  *
  * @see \TwigCsFixer\Rules\Punctuation\PunctuationSpacingRule
@@ -25,6 +25,7 @@ final class PunctuationSpacingRule extends AbstractSpacingRule
         '.' => 0,
         ',' => 0,
         '|' => 0,
+        '?:' => 1,
     ];
 
     private const SPACE_AFTER = [
@@ -35,6 +36,7 @@ final class PunctuationSpacingRule extends AbstractSpacingRule
         '|' => 0,
         ':' => 1,
         ',' => 1,
+        '?:' => 1,
     ];
 
     /**
