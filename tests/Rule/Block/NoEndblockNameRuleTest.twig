@@ -1,0 +1,24 @@
+{% block aside %}
+    <div class="aside">
+
+        {% block aside_inner %}
+
+            {% block before_primary_supplements %}
+            {% endblock before_primary_supplements %}
+
+            {% block primary_supplements %}
+            {% endblock primary_supplements %}
+
+            {% block after_primary_supplements %}
+            {% endblock after_primary_supplements %}
+
+        {% endblock aside_inner %}
+
+    </div>
+{% endblock aside %}
+
+<body class="{% block body_classes %}{{ bodyClasses }}{% endblock body_classes %}">
+
+{# This block adds a container around the aside #}
+{% block aside_container %}
+{% endblock aside_container %}
