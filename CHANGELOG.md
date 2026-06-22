@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0-alpha.1 - 2026-06-22
+### Added
+- Added support for Twig 3; Twig 3.15 or later is now required
+
+### Removed
+- Dropped support for Twig 2
+
+### Fixed
+- Fixed extra whitespace left when using rule to remove names after endblock tags
+
 ## 1.1.1 - 2026-06-09
 ### Fixed
 - Prevented installation of jadu/twig-style with incompatible versions of Twig 3 where twig/twig >= 3.21.0
