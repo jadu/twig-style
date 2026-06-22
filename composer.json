@@ -30,6 +30,6 @@
         "sort-packages": true
     },
     "conflict": {
-        "twig/twig": ">=3.21.0"
+        "twig/twig": "<3.0.0"
     }
 }
