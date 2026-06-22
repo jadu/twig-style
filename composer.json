@@ -5,7 +5,7 @@
     "license": "proprietary",
     "require": {
         "php": ">=8.1",
-        "vincentlanglet/twig-cs-fixer": "^3.0.0",
+        "vincentlanglet/twig-cs-fixer": "^4.0.0",
         "webmozart/assert": "^1.10.0"
     },
     "require-dev": {

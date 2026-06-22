@@ -11,6 +11,8 @@ use TwigCsFixer\Rules\Delimiter\BlockNameSpacingRule;
 use TwigCsFixer\Rules\Delimiter\DelimiterSpacingRule;
 use TwigCsFixer\Rules\Operator\OperatorNameSpacingRule;
 use TwigCsFixer\Rules\Operator\OperatorSpacingRule;
+use TwigCsFixer\Rules\Operator\TernaryOperatorSpacingRule;
+use TwigCsFixer\Rules\Operator\UnaryOperatorSpacingRule;
 use TwigCsFixer\Rules\Punctuation\TrailingCommaSingleLineRule;
 use TwigCsFixer\Rules\RuleInterface;
 use TwigCsFixer\Rules\Whitespace\BlankEOFRule;
@@ -38,9 +40,11 @@ class JaduStandard implements StandardInterface
             new NoFilterTagRule(),
             new OperatorNameSpacingRule(),
             new OperatorSpacingRule(),
+            new TernaryOperatorSpacingRule(),
             new PunctuationSpacingRule(),
             new TrailingCommaSingleLineRule(),
             new TrailingSpaceRule(),
+            new UnaryOperatorSpacingRule(),
         ];
     }
 }
