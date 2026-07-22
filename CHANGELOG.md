@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.0-alpha.1 - 2026-06-22
+## 2.0.0-alpha.2 - 2026-07-22
 ### Added
 - Added support for Twig 3; Twig 3.15 or later is now required
+- Applied rules for block naming and spacing to macros
 
 ### Removed
 - Dropped support for Twig 2
