@@ -36,7 +36,7 @@ final class NoEndblockNameRule extends AbstractFixableRule
             $error = false;
             $nextPosition = $tokenPosition + 1;
             while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
-                $error = $tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::FILTER_NAME_TYPE, Token::FUNCTION_NAME_TYPE, Token::TEST_NAME_TYPE]);
+                $error = $tokens->get($nextPosition)->isMatching([Token::NAME_TYPE]);
                 if ($error) {
                     $fixer = $this->addFixableError(
                         sprintf('Unexpected block name "%s" after %s', $tokens->get($nextPosition)->getValue(), $token->getValue()),

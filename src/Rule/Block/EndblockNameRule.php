@@ -103,7 +103,7 @@ final class EndblockNameRule extends AbstractFixableRule
 
         $nextPosition = $tokenPosition + 1;
         while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
-            if ($tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::FILTER_NAME_TYPE, Token::FUNCTION_NAME_TYPE, Token::TEST_NAME_TYPE])) {
+            if ($tokens->get($nextPosition)->isMatching([Token::NAME_TYPE])) {
                 return $nextPosition;
             }
             ++$nextPosition;
