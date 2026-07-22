@@ -61,9 +61,9 @@ vendor/bin/twig-cs-fixer lint --fix
 
 This standard is based on the [official Twig coding standards](https://twig.symfony.com/doc/3.x/coding_standards.html), with the following additions and changes:
 
-### Block spacing and new lines
+### Block and macro spacing and new lines
 
-There must be one new line before block tags and one new line after endblock tags.
+There must be one new line before block or macro tags and one new line after endblock or endmacro tags.
 
 ```twig
 
@@ -86,6 +86,13 @@ There must be one new line before block tags and one new line after endblock tag
     </div>
 {% endblock %}
 
+{% macro outer_macro() %}
+
+    {% macro inner_macro() %}
+    {% endmacro %}
+
+{% endmacro %}
+
 ```
 
 The following exceptions apply:
@@ -103,13 +110,16 @@ The following exceptions apply:
     {% block aside_container %}
     ```
 
-### Endblock names
+### Endblock and endmacro names
 
-Any `endblock` tags must be followed by the name of the block they are closing.
+Any `endblock` or `endmacro` tags must be followed by the name of the block or macro they are closing.
 
 ```twig
 {% block aside_container %}
 {% endblock aside_container %}
+
+{% macro render_widget() %}
+{% endmacro render_widget %}
 ```
 
 ### No spaceless tags

@@ -6,6 +6,7 @@ namespace Jadu\Style\Twig\Rule\Filter;
 
 use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 
 /**
  * Replaces usages of the {% filter %} tag with {% apply %}.
@@ -15,17 +16,17 @@ final class NoFilterTagRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    protected function process(int $tokenPosition, array $tokens): void
+    protected function process(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         $error = false;
         if (
-            $this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
+            $token->isMatching(Token::BLOCK_NAME_TYPE)
             && in_array($token->getValue(), ['filter', 'endfilter'], true)
         ) {
             $error = true;

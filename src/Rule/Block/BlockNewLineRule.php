@@ -6,10 +6,11 @@ namespace Jadu\Style\Twig\Rule\Block;
 
 use TwigCsFixer\Rules\AbstractFixableRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure that there is one new line before block tags and after endblock tags, with the following exceptions:
+ * Ensure that there is one new line before block and macro tags and after endblock and endmacro tags, with the following exceptions:
  * 1. Inline blocks are allowed. e.g.
  *      <body class="{% block body_classes %}{{ bodyClasses }}{% endblock %}">
  * 2. Comments on the line above block tags are allowed. e.g.
@@ -20,49 +21,50 @@ final class BlockNewLineRule extends AbstractFixableRule
 {
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    protected function process(int $tokenPosition, array $tokens): void
+    protected function process(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
         if (
-            !$this->isTokenMatching($token, Token::BLOCK_NAME_TYPE)
-            || !in_array($token->getValue(), ['block', 'endblock'], true)
+            !$token->isMatching([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE])
+            || !in_array($token->getValue(), ['block', 'macro', 'endblock', 'endmacro'], true)
         ) {
             return;
         }
 
-        if ($token->getValue() === 'block') {
+        if (in_array($token->getValue(), ['block', 'macro'], true)) {
             $this->checkEolBeforeBlock($tokenPosition, $tokens);
-        } elseif ($token->getValue() === 'endblock') {
+        } elseif (in_array($token->getValue(), ['endblock', 'endmacro'], true)) {
             $this->checkEolAfterEndblock($tokenPosition, $tokens);
         }
     }
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    private function checkEolBeforeBlock(int $tokenPosition, array $tokens): void
+    private function checkEolBeforeBlock(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
+        $tokenName = str_starts_with($token->getValue(), 'end') ? substr($token->getValue(), 3) : $token->getValue();
 
         // Find the opening {% BLOCK_START_TYPE token
-        $blockStartPosition = $this->findPrevious(Token::BLOCK_START_TYPE, $tokens, $tokenPosition - 1);
+        $blockStartPosition = $tokens->findPrevious(Token::BLOCK_START_TYPE, $tokenPosition - 1);
         // Find the token before the BLOCK_START_TYPE token, ignoring any WHITESPACE_TYPE tokens
-        $tokenBeforeBlockStartPosition = $this->findPrevious(Token::WHITESPACE_TYPE, $tokens, $blockStartPosition - 1, true);
+        $tokenBeforeBlockStartPosition = $tokens->findPrevious(Token::WHITESPACE_TYPE, $blockStartPosition - 1, 0, true);
         // If any token other than EOL is found, this is an "inline" block, so return early
-        if (!$this->isTokenMatching($tokens[$tokenBeforeBlockStartPosition], Token::EOL_TYPE)) {
+        if ($tokenBeforeBlockStartPosition !== false && !$tokens->get($tokenBeforeBlockStartPosition)->isMatching(Token::EOL_TYPE)) {
             return;
         }
 
         // Calculate the number of consecutive EOL tokens before this one by finding the previous non-EOL_TYPE token
-        $previousPosition = $this->findPrevious(Token::EOL_TYPE, $tokens, $tokenBeforeBlockStartPosition - 1, true);
+        $previousPosition = $tokens->findPrevious(Token::EOL_TYPE, $tokenBeforeBlockStartPosition - 1, 0, true);
         if (false === $previousPosition) {
             // If all previous tokens are EOL_TYPE, we have to count one more
             // since $tokenPosition starts at 0
@@ -77,12 +79,12 @@ final class BlockNewLineRule extends AbstractFixableRule
         }
 
         // Allow comments above blocks
-        if (0 === $consecutiveEolTokens && $this->isTokenMatching($tokens[$previousPosition], Token::COMMENT_END_TYPE)) {
+        if (0 === $consecutiveEolTokens && $tokens->get($previousPosition)->isMatching(Token::COMMENT_END_TYPE)) {
             return;
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must start with 1 new line; found %d', $consecutiveEolTokens),
+            sprintf('A %s must start with 1 new line; found %d', $tokenName, $consecutiveEolTokens),
             $token
         );
 
@@ -108,30 +110,31 @@ final class BlockNewLineRule extends AbstractFixableRule
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return void
      */
-    private function checkEolAfterEndblock(int $tokenPosition, array $tokens): void
+    private function checkEolAfterEndblock(int $tokenPosition, Tokens $tokens): void
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
+        $tokenName = str_starts_with($token->getValue(), 'end') ? substr($token->getValue(), 3) : $token->getValue();
 
         // Find the closing %} BLOCK_END_TYPE token
-        $blockEndPosition = $this->findNext(Token::BLOCK_END_TYPE, $tokens, $tokenPosition + 1);
+        $blockEndPosition = $tokens->findNext(Token::BLOCK_END_TYPE, $tokenPosition + 1);
         // Find the token after the BLOCK_END_TYPE token, ignoring any WHITESPACE_TYPE tokens
-        $tokenAfterBlockEndPosition = $this->findNext(Token::WHITESPACE_TYPE, $tokens, $blockEndPosition + 1, true);
+        $tokenAfterBlockEndPosition = $tokens->findNext(Token::WHITESPACE_TYPE, $blockEndPosition + 1, null, true);
         // If any token other than EOL is found, this is an "inline" block, so return early
-        if (!$this->isTokenMatching($tokens[$tokenAfterBlockEndPosition], Token::EOL_TYPE)) {
+        if (!$tokens->get($tokenAfterBlockEndPosition)->isMatching(Token::EOL_TYPE)) {
             return;
         }
 
         // Calculate the number of consecutive EOL tokens after this one by finding the next non-EOL_TYPE token
-        $nextPosition = $this->findNext(Token::EOL_TYPE, $tokens, $tokenAfterBlockEndPosition + 1, true);
+        $nextPosition = $tokens->findNext(Token::EOL_TYPE, $tokenAfterBlockEndPosition + 1, null, true);
         Assert::notFalse($nextPosition, 'An EOL_TYPE cannot be the last non-empty token');
         $consecutiveEolTokens = $nextPosition - $tokenAfterBlockEndPosition - 1;
 
         // If the EOF token is found, this is the end of file so an extra new line is not required
-        if ($this->isTokenMatching($tokens[$nextPosition], Token::EOF_TYPE)) {
+        if ($tokens->get($nextPosition)->isMatching(Token::EOF_TYPE)) {
             return;
         }
 
@@ -141,7 +144,7 @@ final class BlockNewLineRule extends AbstractFixableRule
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must end with 1 new line; found %d', $consecutiveEolTokens),
+            sprintf('A %s must end with 1 new line; found %d', $tokenName, $consecutiveEolTokens),
             $token
         );
 

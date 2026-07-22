@@ -6,10 +6,11 @@ namespace Jadu\Style\Twig\Rule\Punctuation;
 
 use TwigCsFixer\Rules\AbstractSpacingRule;
 use TwigCsFixer\Token\Token;
+use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure there is no space before and after punctuation except for '{', '}', ':', and ','.
+ * Ensure there is no space before and after punctuation except for '{', '}', ':', ',', and '?:'.
  * No spaces are allowed between "paired" tokens such as arrays, hashes, and parentheses when they are empty.
  *
  * @see \TwigCsFixer\Rules\Punctuation\PunctuationSpacingRule
@@ -21,42 +22,40 @@ final class PunctuationSpacingRule extends AbstractSpacingRule
         ']' => 0,
         '}' => 1,
         ':' => 0,
-        '.' => 0,
         ',' => 0,
-        '|' => 0,
+        '?:' => 1,
     ];
 
     private const SPACE_AFTER = [
         '(' => 0,
         '[' => 0,
         '{' => 1,
-        '.' => 0,
-        '|' => 0,
         ':' => 1,
         ',' => 1,
+        '?:' => 1,
     ];
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return int|null
      */
-    protected function getSpaceBefore(int $tokenPosition, array $tokens): ?int
+    protected function getSpaceBefore(int $tokenPosition, Tokens $tokens): ?int
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
-        if (!$this->isTokenMatching($token, Token::PUNCTUATION_TYPE)) {
+        if (!$token->isMatching(Token::PUNCTUATION_TYPE)) {
             return null;
         }
 
-        $previousPosition = $this->findPrevious(Token::WHITESPACE_TOKENS, $tokens, $tokenPosition - 1, true);
+        $previousPosition = $tokens->findPrevious(Token::WHITESPACE_TOKENS, $tokenPosition - 1, 0, true);
         if (false === $previousPosition) {
             return null;
         }
 
         // Always remove spaces for empty arrays, hashes, and parentheses
-        $previousToken = $tokens[$previousPosition];
+        $previousToken = $tokens->get($previousPosition);
         if ($this->getPairedTokens($previousToken, $token)) {
             return 0;
         }
@@ -66,23 +65,23 @@ final class PunctuationSpacingRule extends AbstractSpacingRule
 
     /**
      * @param int $tokenPosition
-     * @param array<int, Token> $tokens
+     * @param Tokens $tokens
      *
      * @return int|null
      */
-    protected function getSpaceAfter(int $tokenPosition, array $tokens): ?int
+    protected function getSpaceAfter(int $tokenPosition, Tokens $tokens): ?int
     {
-        $token = $tokens[$tokenPosition];
+        $token = $tokens->get($tokenPosition);
 
-        if (!$this->isTokenMatching($token, Token::PUNCTUATION_TYPE)) {
+        if (!$token->isMatching(Token::PUNCTUATION_TYPE)) {
             return null;
         }
 
-        $nextPosition = $this->findNext(Token::WHITESPACE_TOKENS, $tokens, $tokenPosition + 1, true);
+        $nextPosition = $tokens->findNext(Token::WHITESPACE_TOKENS, $tokenPosition + 1, null, true);
         Assert::notFalse($nextPosition, 'A PUNCTUATION_TYPE cannot be the last non-empty token');
 
         // Always remove spaces for empty arrays, hashes, and parentheses
-        $nextToken = $tokens[$nextPosition];
+        $nextToken = $tokens->get($nextPosition);
         if ($this->getPairedTokens($token, $nextToken)) {
             return 0;
         }

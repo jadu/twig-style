@@ -1,0 +1,40 @@
+{% block aside %}
+    <div class="aside">
+
+        {% block aside_inner %}
+
+            {% block before_primary_supplements %}
+            {% endblock %}
+
+            {% block primary_supplements %}
+            {% endblock %}
+
+            {% block after_primary_supplements %}
+            {% endblock %}
+
+        {% endblock %}
+
+    </div>
+{% endblock %}
+
+<body class="{% block body_classes %}{{ bodyClasses }}{% endblock %}">
+
+{# This block adds a container around the aside #}
+{% block aside_container %}
+{% endblock %}
+
+{% macro test() %}
+{% endmacro %}
+{% macro outer_macro() %}
+    {% macro inner_macro() %}
+    {% endmacro %}
+{% endmacro %}
+
+{% block badges %}
+    {% macro render_badge(text) %}
+        <span class="badge">{{ text }}</span>
+    {% endmacro %}
+
+    {{ _self.render_badge('Live') }}
+    {{ _self.render_badge('Offline') }}
+{% endblock %}
