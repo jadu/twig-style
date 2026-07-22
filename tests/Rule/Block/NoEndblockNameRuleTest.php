@@ -19,6 +19,11 @@ final class NoEndblockNameRuleTest extends AbstractRuleTestCase
             'NoEndblockName.Error:18:4' => 'Unexpected block name "aside" after endblock',
             'NoEndblockName.Error:20:58' => 'Unexpected block name "body_classes" after endblock',
             'NoEndblockName.Error:24:4' => 'Unexpected block name "aside_container" after endblock',
+            'NoEndblockName.Error:27:4' => 'Unexpected macro name "test" after endmacro',
+            'NoEndblockName.Error:30:8' => 'Unexpected macro name "inner_macro" after endmacro',
+            'NoEndblockName.Error:31:4' => 'Unexpected macro name "outer_macro" after endmacro',
+            'NoEndblockName.Error:36:8' => 'Unexpected macro name "render_badge" after endmacro',
+            'NoEndblockName.Error:40:4' => 'Unexpected block name "badges" after endblock',
         ]);
     }
 }

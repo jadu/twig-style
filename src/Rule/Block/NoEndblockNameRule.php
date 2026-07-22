@@ -9,7 +9,7 @@ use TwigCsFixer\Token\Token;
 use TwigCsFixer\Token\Tokens;
 
 /**
- * Ensure that an endblock tag has no name.
+ * Ensure that an endblock or endmacro tag has no name.
  */
 final class NoEndblockNameRule extends AbstractFixableRule
 {
@@ -24,8 +24,8 @@ final class NoEndblockNameRule extends AbstractFixableRule
         $token = $tokens->get($tokenPosition);
 
         if (
-            $token->isMatching(Token::BLOCK_NAME_TYPE)
-            && $token->getValue() === 'endblock'
+            $token->isMatching([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE])
+            && in_array($token->getValue(), ['endblock', 'endmacro'], true)
         ) {
             // Ignore new line
             $next = $tokens->findNext(Token::INDENT_TOKENS, $tokenPosition + 1, null, true);
@@ -33,13 +33,16 @@ final class NoEndblockNameRule extends AbstractFixableRule
                 return;
             }
 
+            $tokenName = $token->getValue();
+            $pairedTokenName = str_starts_with($tokenName, 'end') ? substr($tokenName, 3) : $tokenName;
+
             $error = false;
             $nextPosition = $tokenPosition + 1;
             while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
-                $error = $tokens->get($nextPosition)->isMatching([Token::NAME_TYPE]);
+                $error = $tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::MACRO_NAME_TYPE]);
                 if ($error) {
                     $fixer = $this->addFixableError(
-                        sprintf('Unexpected block name "%s" after %s', $tokens->get($nextPosition)->getValue(), $token->getValue()),
+                        sprintf('Unexpected %s name "%s" after %s', $pairedTokenName, $tokens->get($nextPosition)->getValue(), $tokenName),
                         $token
                     );
                     break;

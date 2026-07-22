@@ -19,6 +19,11 @@ final class EndblockNameRuleTest extends AbstractRuleTestCase
             'EndblockName.Error:18:4' => 'Missing endblock name "aside"',
             'EndblockName.Error:20:58' => 'Missing endblock name "body_classes"',
             'EndblockName.Error:24:4' => 'Missing endblock name "aside_container"',
+            'EndblockName.Error:27:4' => 'Missing endmacro name "test"',
+            'EndblockName.Error:30:8' => 'Missing endmacro name "inner_macro"',
+            'EndblockName.Error:31:4' => 'Missing endmacro name "outer_macro"',
+            'EndblockName.Error:36:8' => 'Missing endmacro name "render_badge"',
+            'EndblockName.Error:40:4' => 'Missing endblock name "badges"',
         ]);
     }
 }

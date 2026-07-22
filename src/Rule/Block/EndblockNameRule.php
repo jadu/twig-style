@@ -10,7 +10,7 @@ use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure that an endblock tag has the name of the corresponding block tag.
+ * Ensure that an endblock or endmacro tag has the name of the corresponding block or macro tag.
  */
 final class EndblockNameRule extends AbstractFixableRule
 {
@@ -25,12 +25,15 @@ final class EndblockNameRule extends AbstractFixableRule
         $token = $tokens->get($tokenPosition);
 
         if (
-            $token->isMatching(Token::BLOCK_NAME_TYPE)
-            && $token->getValue() === 'endblock'
+            $token->isMatching([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE])
+            && in_array($token->getValue(), ['endblock', 'endmacro'], true)
         ) {
+            $tokenName = $token->getValue();
+            $pairedTokenName = str_starts_with($tokenName, 'end') ? substr($tokenName, 3) : $tokenName;
+
             $matchingBlockTokenPosition = $this->getMatchingBlockTokenPositionForEndblockToken($tokenPosition, $tokens);
             if (!$matchingBlockTokenPosition) {
-                $this->addError('Could not find matching block tag for endblock tag', $token);
+                $this->addError(sprintf('Could not find matching %s tag for %s tag', $pairedTokenName, $tokenName), $token);
 
                 return;
             }
@@ -41,14 +44,14 @@ final class EndblockNameRule extends AbstractFixableRule
             $nameAfterEndblockToken = ($nameAfterEndblockTokenPosition !== false) ? $tokens->get($nameAfterEndblockTokenPosition)->getValue() : null;
 
             if (!$nameAfterBlockToken && !$nameAfterEndblockToken) {
-                $this->addError('Missing block name and endblock name', $token);
+                $this->addError(sprintf('Missing %s name and %s name', $pairedTokenName, $tokenName), $token);
 
                 return;
             }
 
             if (!$nameAfterBlockToken && $nameAfterEndblockToken) {
                 $this->addError(
-                    sprintf('Missing block name "%s"', $nameAfterEndblockToken),
+                    sprintf('Missing %s name "%s"', $pairedTokenName, $nameAfterEndblockToken),
                     $tokens->get($matchingBlockTokenPosition)
                 );
 
@@ -57,12 +60,12 @@ final class EndblockNameRule extends AbstractFixableRule
 
             if ($nameAfterBlockToken && !$nameAfterEndblockToken) {
                 $fixer = $this->addFixableError(
-                    sprintf('Missing endblock name "%s"', $nameAfterBlockToken),
+                    sprintf('Missing %s name "%s"', $tokenName, $nameAfterBlockToken),
                     $token
                 );
             } elseif ($nameAfterBlockToken !== $nameAfterEndblockToken) {
                 $fixer = $this->addFixableError(
-                    sprintf('Mismatching block name "%s" and endblock name "%s"', $nameAfterBlockToken, $nameAfterEndblockToken),
+                    sprintf('Mismatching %s name "%s" and %s name "%s"', $tokenName, $nameAfterBlockToken, $pairedTokenName, $nameAfterEndblockToken),
                     $token
                 );
             } else {
@@ -80,7 +83,7 @@ final class EndblockNameRule extends AbstractFixableRule
             if ($nameAfterEndblockTokenPosition !== false) {
                 $fixer->replaceToken($nameAfterEndblockTokenPosition, $nameAfterBlockToken);
             } else {
-                $fixer->replaceToken($tokenPosition, sprintf('endblock %s', $nameAfterBlockToken));
+                $fixer->replaceToken($tokenPosition, sprintf('%s %s', $token->getValue(), $nameAfterBlockToken));
             }
         }
     }
@@ -103,7 +106,7 @@ final class EndblockNameRule extends AbstractFixableRule
 
         $nextPosition = $tokenPosition + 1;
         while (!$tokens->get($nextPosition)->isMatching(Token::BLOCK_END_TYPE)) {
-            if ($tokens->get($nextPosition)->isMatching([Token::NAME_TYPE])) {
+            if ($tokens->get($nextPosition)->isMatching([Token::NAME_TYPE, Token::MACRO_NAME_TYPE])) {
                 return $nextPosition;
             }
             ++$nextPosition;
@@ -122,19 +125,19 @@ final class EndblockNameRule extends AbstractFixableRule
     {
         $token = $tokens->get($tokenPosition);
 
-        if (!$token->isMatching(Token::BLOCK_NAME_TYPE) || $token->getValue() !== 'endblock') {
+        if (!$token->isMatching([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE]) || !in_array($token->getValue(), ['endblock', 'endmacro'], true)) {
             return false;
         }
 
         $previousPosition = $tokenPosition - 1;
         $blocks = 0;
         $endblocks = 1;
-        // When $blocks === $endblocks we have found the matching block token for the original endblock token
-        while ($blocks !== $endblocks && false !== ($previousPosition = $tokens->findPrevious(Token::BLOCK_NAME_TYPE, $previousPosition))) {
+        // When $blocks === $endblocks we have found the matching block token for the original endblock or endmacro token
+        while ($blocks !== $endblocks && false !== ($previousPosition = $tokens->findPrevious([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE], $previousPosition))) {
             $previousBlockToken = $tokens->get($previousPosition);
-            if ($previousBlockToken->getValue() === 'block') {
+            if (in_array($previousBlockToken->getValue(), ['block', 'macro'])) {
                 ++$blocks;
-            } elseif ($previousBlockToken->getValue() === 'endblock') {
+            } elseif (in_array($previousBlockToken->getValue(), ['endblock', 'endmacro'], true)) {
                 ++$endblocks;
             }
             --$previousPosition;

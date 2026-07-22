@@ -10,7 +10,7 @@ use TwigCsFixer\Token\Tokens;
 use Webmozart\Assert\Assert;
 
 /**
- * Ensure that there is one new line before block tags and after endblock tags, with the following exceptions:
+ * Ensure that there is one new line before block and macro tags and after endblock and endmacro tags, with the following exceptions:
  * 1. Inline blocks are allowed. e.g.
  *      <body class="{% block body_classes %}{{ bodyClasses }}{% endblock %}">
  * 2. Comments on the line above block tags are allowed. e.g.
@@ -30,15 +30,15 @@ final class BlockNewLineRule extends AbstractFixableRule
         $token = $tokens->get($tokenPosition);
 
         if (
-            !$token->isMatching(Token::BLOCK_NAME_TYPE)
-            || !in_array($token->getValue(), ['block', 'endblock'], true)
+            !$token->isMatching([Token::BLOCK_NAME_TYPE, Token::MACRO_NAME_TYPE])
+            || !in_array($token->getValue(), ['block', 'macro', 'endblock', 'endmacro'], true)
         ) {
             return;
         }
 
-        if ($token->getValue() === 'block') {
+        if (in_array($token->getValue(), ['block', 'macro'], true)) {
             $this->checkEolBeforeBlock($tokenPosition, $tokens);
-        } elseif ($token->getValue() === 'endblock') {
+        } elseif (in_array($token->getValue(), ['endblock', 'endmacro'], true)) {
             $this->checkEolAfterEndblock($tokenPosition, $tokens);
         }
     }
@@ -52,6 +52,7 @@ final class BlockNewLineRule extends AbstractFixableRule
     private function checkEolBeforeBlock(int $tokenPosition, Tokens $tokens): void
     {
         $token = $tokens->get($tokenPosition);
+        $tokenName = str_starts_with($token->getValue(), 'end') ? substr($token->getValue(), 3) : $token->getValue();
 
         // Find the opening {% BLOCK_START_TYPE token
         $blockStartPosition = $tokens->findPrevious(Token::BLOCK_START_TYPE, $tokenPosition - 1);
@@ -83,7 +84,7 @@ final class BlockNewLineRule extends AbstractFixableRule
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must start with 1 new line; found %d', $consecutiveEolTokens),
+            sprintf('A %s must start with 1 new line; found %d', $tokenName, $consecutiveEolTokens),
             $token
         );
 
@@ -116,6 +117,7 @@ final class BlockNewLineRule extends AbstractFixableRule
     private function checkEolAfterEndblock(int $tokenPosition, Tokens $tokens): void
     {
         $token = $tokens->get($tokenPosition);
+        $tokenName = str_starts_with($token->getValue(), 'end') ? substr($token->getValue(), 3) : $token->getValue();
 
         // Find the closing %} BLOCK_END_TYPE token
         $blockEndPosition = $tokens->findNext(Token::BLOCK_END_TYPE, $tokenPosition + 1);
@@ -142,7 +144,7 @@ final class BlockNewLineRule extends AbstractFixableRule
         }
 
         $fixer = $this->addFixableError(
-            sprintf('A block must end with 1 new line; found %d', $consecutiveEolTokens),
+            sprintf('A %s must end with 1 new line; found %d', $tokenName, $consecutiveEolTokens),
             $token
         );
 

@@ -19,6 +19,10 @@ final class BlockNewLineRuleTest extends AbstractRuleTestCase
             'BlockNewLine.Error:9:16' => 'A block must start with 1 new line; found 0',
             'BlockNewLine.Error:10:16' => 'A block must end with 1 new line; found 0',
             'BlockNewLine.Error:11:12' => 'A block must end with 1 new line; found 0',
+            'BlockNewLine.Error:22:4' => 'A macro must end with 1 new line; found 0',
+            'BlockNewLine.Error:23:4' => 'A macro must start with 1 new line; found 0',
+            'BlockNewLine.Error:24:8' => 'A macro must start with 1 new line; found 0',
+            'BlockNewLine.Error:25:8' => 'A macro must end with 1 new line; found 0',
         ]);
     }
 }

@@ -17,3 +17,10 @@
 {# This block adds a container around the aside #}
 {% block aside_container %}
 {% endblock %}
+
+{% macro test() %}
+{% endmacro %}
+{% macro outer_macro() %}
+    {% macro inner_macro() %}
+    {% endmacro %}
+{% endmacro %}
